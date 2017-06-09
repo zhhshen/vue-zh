@@ -13,7 +13,8 @@ web开发中我们经常会遇到级联选择器的问题，尤其是在表单�
 
 本文探讨一下在vue中的实现级联选择器，自己在项目中碰到过以下两种情况的后端数据,查阅资料后也证实了这两种数据的合理性:
 
-[预览地址](https://github.com/zhhshen/form-orgination)
+[预览地址](https://zhhshen.github.io/form-orgination/docs)
+
 [github地址](https://github.com/zhhshen/form-orgination)
 
 #### 1 后端处理数据逻辑
