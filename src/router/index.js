@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Hello from '@/views/Hello'
-import Structure from '@/views/Structure'
+import Hello from '@/views/demo1'
+import Hello2 from '@/views/demo2'
 
 Vue.use(Router)
 
@@ -15,7 +15,7 @@ export default new Router({
     {
       path: '/structure',
       name: 'structure',
-      component: Structure
+      component: Hello2
     }
   ]
 })

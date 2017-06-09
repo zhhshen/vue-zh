@@ -1,6 +1,9 @@
 <template lang="html">
 <div class="structure-wrap hello">
-  <div class="structure-title">
+  <div class="title">
+    <h4>前端处理数据的情况</h4>
+  </div>
+  <div class="ms-form">
     <div class="ms-form-item">
       <label class="ms-form-label">组织架构:</label>
       <div class="ms-form-input-block">
@@ -13,6 +16,9 @@
         <form-organization :organization="currStructure" v-model="seleted2"></form-organization>
       </div>
     </div>
+  </div>
+  <div class="router-links">
+    <router-link :to="{ path: '/' }">查看后端处理数据情况</router-link>
   </div>
 </div>
 </template>

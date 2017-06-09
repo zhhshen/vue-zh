@@ -1,8 +1,7 @@
 <template>
   <div class="hello">
-    <div class="router-links">
-      <router-link :to="{ path: '/' }">后端处理数据</router-link>
-      <router-link :to="{ path: '/structure' }">前端处理数据</router-link>
+    <div class="title">
+      <h4>后端处理数据的情况</h4>
     </div>
     <div class="ms-form">
       <div class="ms-form-item">
@@ -23,6 +22,9 @@
           <form-organization :organization="organization3" v-model="seleted3"></form-organization>
         </div>
       </div>
+    </div>
+    <div class="router-links">
+      <router-link :to="{ path: '/structure' }">查看前端处理数据的情况</router-link>
     </div>
   </div>
 </template>
@@ -184,10 +186,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-.hello {
-  width: 600px;
-  margin: 50px auto;
-}
+
 .ms-form {
   background: #fff;
   padding: 20px;
