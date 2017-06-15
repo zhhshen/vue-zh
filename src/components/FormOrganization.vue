@@ -170,6 +170,8 @@ export default {
     },
 
     initValue: function () {
+      this.content = []
+      this.result = []
       var output = {}
       function filterArray (data, name) {
         for (var i = 0; i < data.length; i++) {
@@ -186,7 +188,6 @@ export default {
           } else if (obj.children && obj.children.length) {
             filterArray(obj.children, name)
           } else {
-            break
           }
         }
         return output
@@ -215,8 +216,8 @@ export default {
               label: node.label
             })
           }
-          this.result = this.content
         }
+        this.result = this.content
       }
     }
   },
