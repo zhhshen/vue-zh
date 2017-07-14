@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Hello from '@/views/demo1'
-import Hello2 from '@/views/demo2'
-import Table from '@/views/table'
+import Home from '@/views/Base/Home'
+// content
+import Organization from '@/views/Content/Organization'
+import Multiple from '@/views/Content/Multiple'
+import Table from '@/views/Content/Table'
 
 Vue.use(Router)
 
@@ -10,18 +12,14 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'hello',
-      component: Hello
-    },
-    {
-      path: '/structure',
-      name: 'structure',
-      component: Hello2
-    },
-    {
-      path: '/table',
-      name: 'table',
-      component: Table
+      name: 'home',
+      component: Home,
+      redirect: '/organization',
+      children: [
+        { path: '/organization', component: Organization, name: 'organization' },
+        { path: '/multiple', component: Multiple, name: 'multiple' },
+        { path: '/table', component: Table, name: 'table' }
+      ]
     }
   ]
 })
