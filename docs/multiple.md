@@ -2,7 +2,7 @@
 ---
 多选下拉框是我们平时开发中经常用到的，从下拉框中选择多个选项，还有情况还需求在其他地方展示所选择的选项，这就要求从组件中的传递出来的数据，不只是所选元素的value值而已，最好是连同此value值对应的其他字段，方便我们展示多选的内容。
 
-[在线预览](https://zhhshen.github.io/vue-zh/demo.html/#/multiple)
+[在线预览](https://zhhshen.github.io/vue-zh/demo.html#/multiple)
 
 ## 引入组件
 

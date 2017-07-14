@@ -10,7 +10,7 @@
 * 支持按照某个字段排序
 * 支持表头字段显示提示文本
 
-[在线预览](https://zhhshen.github.io/vue-zh/demo.html/#/table)
+[在线预览](https://zhhshen.github.io/vue-zh/demo.html#/table)
 
 ## 使用组件
 
