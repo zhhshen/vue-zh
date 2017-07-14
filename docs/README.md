@@ -10,7 +10,7 @@ web开发中我们经常会遇到级联选择器的问题，尤其是在表单�
 
 文中在vue中的实现级联选择器，自己在项目中碰到过以下两种情况的后端数据,查阅资料后也证实了这两种数据的合理性:
 
-[在线预览](https://zhhshen.github.io/vue-zh)
+[在线预览](https://zhhshen.github.io/vue-zh/demo.html)
 
 ## 后端返回固定格式的数据
 
