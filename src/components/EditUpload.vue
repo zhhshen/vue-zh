@@ -147,7 +147,7 @@ export default {
                 line-height: 16px;
                 border-radius: 0px;
                 vertical-align: middle;
-                background-color: rgba(0, 0, 0, 1);
+                background-color: rgba(0, 0, 0, .6);
                 cursor: pointer;
             }
         }

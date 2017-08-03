@@ -22,7 +22,11 @@
   </div>
   <ms-subheader>3 可左右滑动的表格</ms-subheader>
   <div class="ms-form-item">
-    <ms-table :columns="tableHead3" :data="tableBody3"></ms-table>
+    <ms-table multiple :columns="tableHead3" :data="tableBody3"></ms-table>
+  </div>
+  <ms-subheader>4 可排序的表格</ms-subheader>
+  <div class="ms-form-item">
+    <ms-table multiple :columns="tableHead4" :data="tableBody4"></ms-table>
   </div>
 </div>
 </template>
@@ -42,17 +46,23 @@ export default {
       tableHead2: [],
       tableBody2: [],
       tableHead3: [],
-      tableBody3: []
+      tableBody3: [],
+      tableHead4: [],
+      tableBody4: []
     }
   },
   created () {
     let table = api.table()
+    let tableSort = api.tableSort()
     this.tableHead1 = table.tableHead.slice(0, 2)
     this.tableBody1 = table.tableBody.slice(0, 10)
     this.tableHead2 = table.tableHead.slice(0, 2)
     this.tableHead3 = table.tableHead.slice(0, 10)
     this.tableBody2 = table.tableBody.slice(0, 10)
     this.tableBody3 = table.tableBody.slice(0, 10)
+
+    this.tableHead4 = tableSort.tableHead
+    this.tableBody4 = tableSort.tableBody
   },
   methods: {
     readRow (item) {

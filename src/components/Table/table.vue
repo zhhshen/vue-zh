@@ -5,16 +5,21 @@
         <table cellspacing="0" cellpadding="0">
           <thead class="ms-table_thead">
             <tr>
+                <th class="ms-table_cell" v-if="multiple">
+                  <div>
+                    <span>全选</span>
+                  </div>
+                </th>
               <th v-for="(item, index) in columns" class="ms-table_cell" :rowspan="item.rowspan">
                 <div>
                   <span>{{item.title}}</span>
                   <span class="ms-table-sort" v-if="item.sortable" @click="handleSort(item)">
-                    <span v-if="!item.sortType">
+                    <span v-if="!item.sortOrder">
                       <i class="ms-sort-arrow-up"></i>
                       <i class="ms-sort-arrow-down"></i>
                     </span>
-                    <i class="ms-sort-arrow-up" :class="{'cur': item.sortType === 'asc'}" ></i>
-                    <i class="ms-sort-arrow-down" :class="{'cur': item.sortType === 'desc'}"></i>
+                    <i class="ms-sort-arrow-up" :class="{'cur': item.sortOrder === 'asc'}" ></i>
+                    <i class="ms-sort-arrow-down" :class="{'cur': item.sortOrder === 'desc'}"></i>
                   </span>
                   <span class="ms-table-tips" v-if="item.tip">
                     <i class="ms-question-sign">?</i>
@@ -34,16 +39,21 @@
       <table cellspacing="0" cellpadding="0" ref="tableMain">
         <thead class="ms-table_thead">
           <tr>
+              <th class="ms-table_cell" v-if="multiple">
+                <div>
+                  <span>全选</span>
+                </div>
+              </th>
             <th v-for="(item, index) in columns" class="ms-table_cell" :rowspan="item.rowspan">
               <div>
                 <span>{{item.title}}</span>
                 <span class="ms-table-sort" v-if="item.sortable" @click="handleSort(item)">
-                  <span v-if="!item.sortType">
+                  <span v-if="!item.sortOrder">
                     <i class="ms-sort-arrow-up"></i>
                     <i class="ms-sort-arrow-down"></i>
                   </span>
-                  <i class="ms-sort-arrow-up" :class="{'cur': item.sortType === 'asc'}" ></i>
-                  <i class="ms-sort-arrow-down" :class="{'cur': item.sortType === 'desc'}"></i>
+                  <i class="ms-sort-arrow-up" :class="{'cur': item.sortOrder === 'asc'}" ></i>
+                  <i class="ms-sort-arrow-down" :class="{'cur': item.sortOrder === 'desc'}"></i>
                 </span>
                 <span class="ms-table-tips" v-if="item.tip">
                   <i class="ms-question-sign">?</i>
@@ -60,6 +70,11 @@
         </thead>
         <tbody class="ms-table_body" v-if="sortData.length">
           <tr v-for="(item, inx) in sortData">
+              <th class="ms-table_cell" v-if="multiple">
+                <div>
+                  <input type="checkbox" :value="inx" v-model="multipleChecked">
+                </div>
+              </th>
             <td class="ms-table_cell" v-for="(value, key) in item" v-if="columnsKeys.indexOf(key)!== -1">{{value}}</td>
             <td class="ms-table_cell" v-if="actions">
               <slot name="others" :content="item" :index="inx"></slot>
@@ -83,17 +98,14 @@ export default {
     },
     columns: {
       type: [Array],
-      default: function () {
-        return []
-      }
+      default: () => []
     },
     data: {
       type: [Array],
-      default: function () {
-        return []
-      }
+      default: () => []
     },
-    actions: Boolean
+    actions: Boolean,
+    multiple: Boolean
   },
   data () {
     return {
@@ -101,7 +113,9 @@ export default {
       styleBody: null,
       filterKey: '',
       filterMethod: '',
-      fixedHead: false
+      sortType: '',
+      fixedHead: false,
+      multipleChecked: []
     }
   },
   computed: {
@@ -113,17 +127,33 @@ export default {
     sortData () {
       let key = this.filterKey
       let type = this.filterMethod
+      let sortType = this.sortType
       let arr = this.data.slice()
+      if (typeof type === 'string') {
+        type = type === 'desc' ? -1 : 1
+      }
+      const order = (type && type < 0) ? -1 : 1
       if (key) {
-        arr.sort(function (a, b) {
-          if (type === 'asc') {
-            return a[key] > b[key] ? 1 : -1
-          } else if (type === 'desc') {
-            return a[key] < b[key] ? 1 : -1
+          if (sortType === 'date') {
+              arr.sort(function (a, b) {
+                  let val1 = a[key]
+                  let val2 = b[key]
+                  val1 = Date.parse(val1.replace(/-/g,'/'))
+                  val2 = Date.parse(val2.replace(/-/g,'/'))
+                  return val1 === val2 ? 0 : val1 > val2 ? order : -order
+              })
           } else {
-            return 0
-          }
-        })
+              arr.sort(function (a, b) {
+                  let val1 = a[key]
+                  let val2 = b[key]
+                  if (typeof (val1) === 'number') {
+                      val1 = parseFloat(val1)
+                      val2 = parseFloat(val2)
+                      return val1 === val2 ? 0 : val1 > val2 ? order : -order
+                  }
+                return false
+             })
+        }
       }
       return arr
     }
@@ -157,9 +187,10 @@ export default {
   methods: {
     handleSort (item) {
       this.filterKey = item.key
-      let method = item.sortType === 'asc' ? 'desc' : 'asc'
+      let method = item.sortOrder === 'asc' ? 'desc' : 'asc'
       this.filterMethod = method
-      item.sortType = method
+      this.sortType = item.sortType ? item.sortType : 'string'
+      item.sortOrder = method
     },
     computedStyle () {
       let wrap = this.$refs.tableWrap
@@ -209,132 +240,132 @@ export default {
 
 <style lang="less">
 .ms-table-wrap {
-  position: relative;
-  width: 100%;
-  overflow-y: hidden;
-	overflow-x: scroll;
-  background: #fff;
-  border: 1px solid #e7e7eb;
-  table {
+    position: relative;
     width: 100%;
-    font-size: 14px;
-    background-color: #fff;
-    text-align: center;
-    border: none;
-    border-spacing: 0;
-    border-collapse: collapse;
-    box-sizing: border-box;
-  }
+    overflow-y: hidden;
+    overflow-x: scroll;
+    background: #fff;
+    border: 1px solid #e7e7eb;
+    table {
+        width: 100%;
+        font-size: 14px;
+        background-color: #fff;
+        text-align: center;
+        border: none;
+        border-spacing: 0;
+        border-collapse: collapse;
+        box-sizing: border-box;
+    }
 }
 .ms-table-content {
-  overflow-y: scroll;
-  overflow-x: hidden;
-  .ms-table_cell {
-    border-top: 1px solid #e7e7eb;
-    border-right: 1px solid #e7e7eb;
-    text-align: center;
-    padding: 10px 8px;
-    min-width: 240px;
-  }
-  .ms-table_thead {
+    overflow-y: scroll;
+    overflow-x: hidden;
     .ms-table_cell {
-      border-top: none
+        border-top: 1px solid #e7e7eb;
+        border-right: 1px solid #e7e7eb;
+        text-align: center;
+        padding: 10px 8px;
+        min-width: 240px;
     }
-  }
+    .ms-table_thead {
+        .ms-table_cell {
+            border-top: none;
+        }
+    }
 }
 .ms-table-sort {
-  display: inline-block;
-  position: relative;
-  width: 10px;
-  height: 12px;
-  margin-left: 4px;
-  margin-top: -1px;
-  vertical-align: middle;
-  overflow: hidden;
-  cursor: pointer;
-  i {
-    display: block;
-    position: absolute;
-    width: 0;
-    height: 0;
+    display: inline-block;
+    position: relative;
+    width: 10px;
+    height: 12px;
+    margin-left: 4px;
+    margin-top: -1px;
+    vertical-align: middle;
     overflow: hidden;
-    color: #bbbec4;
-    transition: color .2s ease-in-out;
-    &.cur {
-      border-color: transparent transparent #2d8cf0 transparent;
+    cursor: pointer;
+    i {
+        display: block;
+        position: absolute;
+        width: 0;
+        height: 0;
+        overflow: hidden;
+        color: #bbbec4;
+        transition: color 0.2s ease-in-out;
+        &.cur {
+            border-color: transparent transparent #2d8cf0 transparent;
+        }
+        &:first-child {
+            top: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent #bbbec4 transparent;
+        }
+        &:last-child {
+            bottom: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #bbbec4 transparent transparent transparent;
+        }
+        &.cur {
+            &:first-child {
+                border-bottom-color: #2d8cf0;
+            }
+            &:last-child {
+                border-top-color: #2d8cf0;
+            }
+        }
     }
-    &:first-child {
-      top: -5px;
-      border-width: 5px;
-      border-style: solid;
-      border-color: transparent transparent #bbbec4 transparent;
-    }
-    &:last-child {
-      bottom: -5px;
-      border-width: 5px;
-      border-style: solid;
-      border-color: #bbbec4 transparent transparent transparent;
-    }
-    &.cur {
-      &:first-child {
-        border-bottom-color: #2d8cf0;
-      }
-      &:last-child {
-        border-top-color: #2d8cf0;
-      }
-    }
-  }
 }
 .ms-table-tips {
-  position: relative;
-  cursor: pointer;
-  .ms-question-sign {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    line-height: 16px;
-    border-radius: 50%;
-    color: #fff;
-    font-size: 12px;
-    background: #444;
-    font-style: normal;
-    overflow: hidden;
-    vertical-align: middle;
-  }
-  .ms-question-sign_wrap {
-    display: none;
-    position: absolute;
-    min-width: 200px;
-    left: 50%;
-    top: 20px;
-    padding: 5px 10px;
-    background: #000;
-    border-radius: 3px;
-    font-size: 12px;
-    color: #fff;
-    -webkit-transform: translateX(-50%);
-    transform: translateX(-50%);
-    -webkit-transition: all 0.3s;
-    transition: all .5s;
-  }
-  &:hover {
-    .ms-question-sign_wrap {
-      display: block;
+    position: relative;
+    cursor: pointer;
+    .ms-question-sign {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
+        border-radius: 50%;
+        color: #fff;
+        font-size: 12px;
+        background: #444;
+        font-style: normal;
+        overflow: hidden;
+        vertical-align: middle;
     }
-  }
+    .ms-question-sign_wrap {
+        display: none;
+        position: absolute;
+        min-width: 200px;
+        left: 50%;
+        top: 20px;
+        padding: 5px 10px;
+        background: #000;
+        border-radius: 3px;
+        font-size: 12px;
+        color: #fff;
+        -webkit-transform: translateX(-50%);
+        transform: translateX(-50%);
+        -webkit-transition: all 0.3s;
+        transition: all 0.5s;
+    }
+    &:hover {
+        .ms-question-sign_wrap {
+            display: block;
+        }
+    }
 }
 .fixed-header {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  z-index: 1;
-  transition: all 0.3s;
-  background: #fff;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 1;
+    transition: all 0.3s;
+    background: #fff;
 }
 .empty_data {
-  padding: 100px 0;
-  text-align: center;
-  font-size: 14px;
-  color: #8d8d8d;
+    padding: 100px 0;
+    text-align: center;
+    font-size: 14px;
+    color: #8d8d8d;
 }
 </style>
