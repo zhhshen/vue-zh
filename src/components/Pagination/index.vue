@@ -1,110 +1,105 @@
 <template lang="html">
 <div class="pagination-wrap" :style="styles">
-  <ul class="ms-pagination" v-bind:class="classes">
-  <li>
-    <a href="#!" class="ms-pagination__navigation"
-      v-bind:class="{ 'ms-pagination__navigation--disabled': value === 1 }"
-      v-on:click.prevent="$emit('input', value - 1)"
-    >
-    ＜
-    </a>
-  </li>
-  <li v-for="n in items">
-    <a href="#!" class="ms-pagination__item"
-      v-bind:class="{ 'ms-pagination__item--active': value === n }"
-      v-on:click.prevent="$emit('input', n)"
-      v-if="!isNaN(n)"
-      v-text="n"
-    >
-    </a>
-    <span class="ms-pagination__more" v-else v-text="n"></span>
-  </li>
-  <li>
-    <a href="#!" class="ms-pagination__navigation"
-      v-bind:class="{ 'ms-pagination__navigation--disabled': value === length }"
-      v-on:click.prevent="$emit('input', value + 1)"
-    >
-    ＞
-    </a>
-  </li>
-</ul>
+    <ul class="ms-pagination" v-bind:class="classes">
+        <li>
+            <a href="#!" class="ms-pagination__navigation"
+                :class="{ 'ms-pagination__navigation--disabled': value === 1 }"
+                @click.prevent="$emit('input', value - 1)"> ＜
+            </a>
+        </li>
+        <li v-for="n in items">
+            <a href="#!" class="ms-pagination__item"
+                :class="{ 'ms-pagination__item--active': value === n }"
+                @click.prevent="$emit('input', n)"
+                v-if="!isNaN(n)"
+                v-text="n">
+            </a>
+            <span class="ms-pagination__more" v-else v-text="n"></span>
+        </li>
+        <li>
+            <a href="#!" class="ms-pagination__navigation"
+                :class="{ 'ms-pagination__navigation--disabled': value === length }"
+                @click.prevent="$emit('input', value + 1)"> ＞
+            </a>
+        </li>
+    </ul>
 </div>
 </template>
 
 <script>
 export default {
-  name: 'pagination',
-  props: {
-    circle: Boolean,
-    disabled: Boolean,
-    length: {
-      type: Number,
-      default: 0
+    name: 'ms-pagination',
+    props: {
+        circle: Boolean,
+        disabled: Boolean,
+        length: {
+            type: Number,
+            default: 0
+        },
+        value: {
+            type: Number,
+            default: 0
+        },
+        position: {
+            type: String,
+            default: 'left'
+        }
     },
-    value: {
-      type: Number,
-      default: 0
+    computed: {
+        styles () {
+            return {
+                textAlign: this.position
+            }
+        },
+
+        classes () {
+            return {
+                'ms-pagination--circle': this.circle,
+                'ms-pagination--disabled': this.disabled
+            }
+        },
+
+        items () {
+            if (this.length <= 5) {
+                return this.range(1, this.length)
+            }
+
+            let min = this.value - 3
+            min = min > 0 ? min : 1
+
+            let max = min + 6
+            max = max <= this.length ? max : this.length
+
+            if (max === this.length) {
+                min = this.length - 6
+            }
+
+            let range = this.range(min, max)
+
+            if (this.value >= 4 && this.length > 6) {
+                range.splice(0, 2, 1, '...')
+            }
+
+            if (this.value + 3 < this.length && this.length > 6) {
+                range.splice(range.length - 2, 2, '...', this.length)
+            }
+
+            return range
+        }
     },
-    position: {
-      type: String,
-      default: 'left'
+
+    methods: {
+        range (from, to) {
+            let range = []
+
+            from = from > 0 ? from : 1
+
+            for (let i = from; i <= to; i++) {
+                range.push(i)
+            }
+            return range
+        }
     }
-  },
-  computed: {
-    styles () {
-     return {
-       textAlign: this.position
-     }
-    },
-
-    classes: function () {
-      return {
-        'ms-pagination--circle': this.circle,
-        'ms-pagination--disabled': this.disabled
-      }
-    },
-
-    items: function () {
-      if (this.length <= 5) {
-        return this.range(1, this.length)
-      }
-
-      var min = this.value - 3
-      min = min > 0 ? min : 1
-
-      var max = min + 6
-      max = max <= this.length ? max : this.length
-
-      if (max === this.length) {
-        min = this.length - 6
-      }
-
-      var range = this.range(min, max)
-
-      if (this.value >= 4 && this.length > 6) {
-        range.splice(0, 2, 1, '...')
-      }
-
-      if (this.value + 3 < this.length && this.length > 6) {
-        range.splice(range.length - 2, 2, '...', this.length)
-      }
-
-      return range
-    }
-  },
-
-  methods: {
-    range: function (from, to) {
-      var range = []
-
-      from = from > 0 ? from : 1
-
-      for (var i = from; i <= to; i++) {
-        range.push(i)
-      }
-      return range
-    }
-  }
 }
 </script>
 

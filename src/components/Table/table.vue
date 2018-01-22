@@ -1,240 +1,290 @@
 <template lang="html">
 <div class="ms-table-wrap" ref="tableWrap">
     <div class="ms-table-content" ref="tableContent" :style="styleBody">
-      <div class="fixed-header" v-if="fixedHead" ref="fixedHeader" :style="style">
-        <table cellspacing="0" cellpadding="0">
-          <thead class="ms-table_thead">
-            <tr>
-                <th class="ms-table_cell" v-if="multiple">
-                  <div>
-                    <span>全选</span>
-                  </div>
-                </th>
-              <th v-for="(item, index) in columns" class="ms-table_cell" :rowspan="item.rowspan">
-                <div>
-                  <span>{{item.title}}</span>
-                  <span class="ms-table-sort" v-if="item.sortable" @click="handleSort(item)">
-                    <span v-if="!item.sortOrder">
-                      <i class="ms-sort-arrow-up"></i>
-                      <i class="ms-sort-arrow-down"></i>
-                    </span>
-                    <i class="ms-sort-arrow-up" :class="{'cur': item.sortOrder === 'asc'}" ></i>
-                    <i class="ms-sort-arrow-down" :class="{'cur': item.sortOrder === 'desc'}"></i>
-                  </span>
-                  <span class="ms-table-tips" v-if="item.tip">
-                    <i class="ms-question-sign">?</i>
-                    <span class="ms-question-sign_wrap" v-text="item.tipText"></span>
-                  </span>
-                </div>
-              </th>
-              <th class="ms-table_cell" v-if="actions">
-                <div>
-                  <span>操作</span>
-                </div>
-              </th>
-            </tr>
-          </thead>
+        <div class="fixed-header" v-if="fixedHead" ref="fixedHeader" :style="style">
+            <table cellspacing="0" cellpadding="0">
+                <thead class="ms-table_thead">
+                    <tr>
+                        <th class="ms-table_cell" v-if="multiple">
+                            <div>
+								<input type="checkbox" v-model="multipleAll">
+                            </div>
+                        </th>
+                        <th v-for="(item, index) in columns" class="ms-table_cell" :rowspan="item.rowspan">
+                            <div>
+                                <span>
+                                    {{item.title}}
+                                </span>
+                                <span class="ms-table-sort" v-if="item.sortable" @click="handleSort(item)">
+                                    <span v-if="!item.sortOrder">
+                                        <i class="ms-sort-arrow-up">
+                                        </i>
+                                        <i class="ms-sort-arrow-down">
+                                        </i>
+                                    </span>
+                                    <i class="ms-sort-arrow-up" :class="{'cur': item.sortOrder === 'asc'}">
+                                    </i>
+                                    <i class="ms-sort-arrow-down" :class="{'cur': item.sortOrder === 'desc'}">
+                                    </i>
+                                </span>
+                                <span class="ms-table-tips" v-if="item.tip">
+                                    <i class="ms-question-sign">
+                                        ?
+                                    </i>
+                                    <span class="ms-question-sign_wrap" v-text="item.tipText">
+                                    </span>
+                                </span>
+                            </div>
+                        </th>
+                        <th class="ms-table_cell" v-if="actions">
+                            <div>
+                                <span>
+                                    操作
+                                </span>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <table cellspacing="0" cellpadding="0" ref="tableMain">
+            <thead class="ms-table_thead">
+                <tr>
+                    <th class="ms-table_cell" v-if="multiple">
+                        <div>
+                            <!-- <span @click="selectAll" :class="{active: multipleAll}">
+                                全选
+                            </span> -->
+							<input type="checkbox" v-model="multipleAll">
+                        </div>
+                    </th>
+                    <th v-for="(item, index) in columns" class="ms-table_cell" :rowspan="item.rowspan">
+                        <div>
+                            <span>
+                                {{item.title}}
+                            </span>
+                            <span class="ms-table-sort" v-if="item.sortable" @click="handleSort(item)">
+                                <span v-if="!item.sortOrder">
+                                    <i class="ms-sort-arrow-up">
+                                    </i>
+                                    <i class="ms-sort-arrow-down">
+                                    </i>
+                                </span>
+                                <i class="ms-sort-arrow-up" :class="{'cur': item.sortOrder === 'asc'}">
+                                </i>
+                                <i class="ms-sort-arrow-down" :class="{'cur': item.sortOrder === 'desc'}">
+                                </i>
+                            </span>
+                            <span class="ms-table-tips" v-if="item.tip">
+                                <i class="ms-question-sign">
+                                    ?
+                                </i>
+                                <span class="ms-question-sign_wrap" v-text="item.tipText">
+                                </span>
+                            </span>
+                        </div>
+                    </th>
+                    <th class="ms-table_cell" v-if="actions">
+                        <div>
+                            <span>
+                                操作
+                            </span>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="ms-table_body" v-if="sortData.length">
+                <tr v-for="(item, inx) in sortData">
+                    <td class="ms-table_cell" v-if="multiple">
+                        <div>
+                            <input type="checkbox" :value="inx" v-model="multipleChecked">
+                        </div>
+                    </td>
+                    <td class="ms-table_cell" v-for="(value, key) in item" v-if="columnsKeys.indexOf(key)!== -1">
+                        {{value}}
+                    </td>
+                    <td class="ms-table_cell" v-if="actions">
+                        <slot name="others" :content="item" :index="inx">
+                        </slot>
+                    </td>
+                </tr>
+            </tbody>
         </table>
-      </div>
-      <table cellspacing="0" cellpadding="0" ref="tableMain">
-        <thead class="ms-table_thead">
-          <tr>
-              <th class="ms-table_cell" v-if="multiple">
-                <div>
-                  <span>全选</span>
-                </div>
-              </th>
-            <th v-for="(item, index) in columns" class="ms-table_cell" :rowspan="item.rowspan">
-              <div>
-                <span>{{item.title}}</span>
-                <span class="ms-table-sort" v-if="item.sortable" @click="handleSort(item)">
-                  <span v-if="!item.sortOrder">
-                    <i class="ms-sort-arrow-up"></i>
-                    <i class="ms-sort-arrow-down"></i>
-                  </span>
-                  <i class="ms-sort-arrow-up" :class="{'cur': item.sortOrder === 'asc'}" ></i>
-                  <i class="ms-sort-arrow-down" :class="{'cur': item.sortOrder === 'desc'}"></i>
-                </span>
-                <span class="ms-table-tips" v-if="item.tip">
-                  <i class="ms-question-sign">?</i>
-                  <span class="ms-question-sign_wrap" v-text="item.tipText"></span>
-                </span>
-              </div>
-            </th>
-            <th class="ms-table_cell" v-if="actions">
-              <div>
-                <span>操作</span>
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody class="ms-table_body" v-if="sortData.length">
-          <tr v-for="(item, inx) in sortData">
-              <th class="ms-table_cell" v-if="multiple">
-                <div>
-                  <input type="checkbox" :value="inx" v-model="multipleChecked">
-                </div>
-              </th>
-            <td class="ms-table_cell" v-for="(value, key) in item" v-if="columnsKeys.indexOf(key)!== -1">{{value}}</td>
-            <td class="ms-table_cell" v-if="actions">
-              <slot name="others" :content="item" :index="inx"></slot>
-            </td>
-          </tr>
-        </tbody>
-      </table>
     </div>
     <div class="ms-table-body" v-if="!sortData.length">
-      <div class="empty_data">暂无数据</div>
+        <div class="empty_data">
+            暂无数据
+        </div>
     </div>
-  </div>
+</div>
 </template>
 
 <script>
 export default {
-  name: 'ms-table',
-  props: {
-    height: {
-      type: [Number, String]
+    name: 'ms-table',
+    props: {
+        height: {
+            type: [Number, String]
+        },
+        columns: {
+            type: [Array],
+            default: () => []
+        },
+        data: {
+            type: [Array],
+            default: () => []
+        },
+        actions: Boolean,
+        multiple: Boolean
     },
-    columns: {
-      type: [Array],
-      default: () => []
-    },
-    data: {
-      type: [Array],
-      default: () => []
-    },
-    actions: Boolean,
-    multiple: Boolean
-  },
-  data () {
-    return {
-      style: null,
-      styleBody: null,
-      filterKey: '',
-      filterMethod: '',
-      sortType: '',
-      fixedHead: false,
-      multipleChecked: []
-    }
-  },
-  computed: {
-    columnsKeys () {
-      return this.columns.map(function (i) {
-        return i.key
-      })
-    },
-    sortData () {
-      let key = this.filterKey
-      let type = this.filterMethod
-      let sortType = this.sortType
-      let arr = this.data.slice()
-      if (typeof type === 'string') {
-        type = type === 'desc' ? -1 : 1
-      }
-      const order = (type && type < 0) ? -1 : 1
-      if (key) {
-          if (sortType === 'date') {
-              arr.sort(function (a, b) {
-                  let val1 = a[key]
-                  let val2 = b[key]
-                  val1 = Date.parse(val1.replace(/-/g,'/'))
-                  val2 = Date.parse(val2.replace(/-/g,'/'))
-                  return val1 === val2 ? 0 : val1 > val2 ? order : -order
-              })
-          } else {
-              arr.sort(function (a, b) {
-                  let val1 = a[key]
-                  let val2 = b[key]
-                  if (typeof (val1) === 'number') {
-                      val1 = parseFloat(val1)
-                      val2 = parseFloat(val2)
-                      return val1 === val2 ? 0 : val1 > val2 ? order : -order
-                  }
-                return false
-             })
+    data() {
+        return {
+            scrollThs: [],
+            style: null,
+            styleBody: null,
+            filterKey: '',
+            filterMethod: '',
+            sortType: '',
+            fixedHead: false,
+            multipleChecked: [],
+			multipleAll: false
         }
-      }
-      return arr
-    }
-  },
-  watch: {
-    columns (newVal) {
-      if (newVal.length) {
+    },
+    computed: {
+        columnsKeys () {
+            return this.columns.map(function(i) {
+                return i.key
+            })
+        },
+        sortData () {
+            let key = this.filterKey
+            let type = this.filterMethod
+            let sortType = this.sortType
+            let arr = this.data.slice()
+            if (typeof type === 'string') {
+                type = type === 'desc' ? -1 : 1
+            }
+            const order = (type && type < 0) ? -1 : 1
+            if (key) {
+                arr.sort(function(a, b) {
+                let val1 = a[key]
+                let val2 = b[key]
+                if (typeof(val1) === 'number') {
+                    val1 = parseFloat(val1)
+                    val2 = parseFloat(val2)
+                }
+                return val1 === val2 ? 0 : val1 > val2 ? order : -order
+                })
+            }
+            return arr
+        }
+    },
+    watch: {
+        columns (newVal) {
+            if (newVal.length) {
+                this.$nextTick(function() {
+                    this.computedStyle()
+                })
+            }
+        },
+        data (newVal) {
+            if (!newVal.length) {
+                this.style = {}
+                this.styleBody = {}
+            }
+        },
+        multipleChecked (newVal) {
+			this.multipleAll = newVal.length > 0 && newVal.length === this.sortData.length
+        },
+		multipleAll (newVal) {
+			if (newVal) {
+				this.multipleChecked = []
+                for (let i = 0; i < this.sortData.length; i++) {
+                    this.multipleChecked.push(i)
+                }
+            } else if (this.multipleChecked.length === this.sortData.length) {
+				this.multipleChecked = []
+			}
+		}
+    },
+    mounted() {
         this.$nextTick(function () {
-          this.computedStyle()
+            if (this.columns.length) {
+                this.computedStyle()
+            }
+            if (this.height) {
+                let content = this.$refs.tableContent
+                content.addEventListener('scroll', this.onScroll, false)
+            }
         })
-      }
     },
-    data (newVal) {
-      if (!newVal.length) {
-        this.style = {}
-        this.styleBody = {}
-      }
-    }
-  },
-  mounted () {
-    this.$nextTick(function () {
-      if (this.columns.length) {
-        this.computedStyle()
-      }
-      if (this.height) {
+    methods: {
+        handleSort (item) {
+            this.filterKey = item.key
+            let method = item.sortOrder === 'asc' ? 'desc' : 'asc'
+            this.filterMethod = method
+            this.sortType = item.sortType ? item.sortType : 'string'
+            item.sortOrder = method
+        },
+        computedStyle () {
+            let wrap = this.$refs.tableWrap
+            let content = this.$refs.tableContent
+            let table = this.$refs.tableMain
+            let main = window.getComputedStyle(wrap, null).width
+            let body = window.getComputedStyle(content, null).width
+            let realW = window.getComputedStyle(table, null).width
+            let arr = [main, body, realW]
+            arr = arr.map((item) => {
+                return Math.floor(item.replace('px', ''))
+            })
+            arr.sort(function(a, b) {
+                return b - a
+            })
+            let mainW = Math.floor(main.replace('px', ''))
+            let maxWidth = (arr[0] - mainW) > 200 ? arr[0] + 'px' : main
+            this.style = {
+                width: maxWidth
+            }
+            if (this.height) {
+                this.styleBody = {
+                width: maxWidth,
+                height: this.height
+                }
+            } else {
+                this.styleBody = {
+                width: maxWidth
+                }
+            }
+            // 计算td中的宽度
+            let trs = table.querySelector('.ms-table_body tr')
+            let tds = trs.querySelectorAll('td')
+            let arrTd = []
+            for (var i = 0; i < tds.length; i++) {
+                let width = window.getComputedStyle(tds[i], null).width
+                arrTd.push(width)
+            }
+            this.scrollThs = arrTd
+        },
+        onScroll () {
+            let content = this.$refs.tableContent
+            if (content.scrollTop) {
+                this.fixedHead = true
+                this.$nextTick(function() {
+                let fixedHeader = this.$refs.fixedHeader
+                let ths = fixedHeader.querySelectorAll('.ms-table_thead th')
+                for (var i = 0; i < ths.length; i++) {
+                    ths[i].style.width = this.scrollThs[i]
+                }
+                })
+            } else {
+                this.fixedHead = false
+            }
+        }
+    },
+    beforeDestroy() {
         let content = this.$refs.tableContent
-        content.addEventListener('scroll', this.onScroll, false)
-      }
-    })
-  },
-  methods: {
-    handleSort (item) {
-      this.filterKey = item.key
-      let method = item.sortOrder === 'asc' ? 'desc' : 'asc'
-      this.filterMethod = method
-      this.sortType = item.sortType ? item.sortType : 'string'
-      item.sortOrder = method
-    },
-    computedStyle () {
-      let wrap = this.$refs.tableWrap
-      let content = this.$refs.tableContent
-      let table = this.$refs.tableMain
-      let main = window.getComputedStyle(wrap, null).width
-      let body = window.getComputedStyle(content, null).width
-      let realW = window.getComputedStyle(table, null).width
-      let arr = [main, body, realW]
-      arr = arr.map((item) => {
-        return Math.floor(item.replace('px', ''))
-      })
-      arr.sort(function (a, b) {
-        return b - a
-      })
-      let mainW = Math.floor(main.replace('px', ''))
-      let maxWidth = (arr[0] - mainW) > 200 ? arr[0] + 'px' : main
-      this.style = {
-        width: maxWidth
-      }
-      if (this.height) {
-        this.styleBody = {
-          width: maxWidth,
-          height: this.height
-        }
-      } else {
-        this.styleBody = {
-          width: maxWidth
-        }
-      }
-    },
-    onScroll () {
-      let content = this.$refs.tableContent
-      if (content.scrollTop) {
-        this.fixedHead = true
-      } else {
-        this.fixedHead = false
-      }
+        content.removeEventListener('scroll', this.onScroll, false)
     }
-  },
-  beforeDestroy () {
-    let content = this.$refs.tableContent
-    content.removeEventListener('scroll', this.onScroll, false)
-  }
 }
 </script>
 

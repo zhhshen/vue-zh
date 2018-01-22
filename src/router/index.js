@@ -5,6 +5,7 @@ import Home from '@/views/Base/Home'
 import Organization from '@/views/Content/Organization'
 import Multiple from '@/views/Content/Multiple'
 import Table from '@/views/Content/Table'
+import Pagination from '@/views/Content/Pagination'
 
 Vue.use(Router)
 
@@ -18,7 +19,8 @@ export default new Router({
       children: [
         { path: '/organization', component: Organization, name: 'organization' },
         { path: '/multiple', component: Multiple, name: 'multiple' },
-        { path: '/table', component: Table, name: 'table' }
+        { path: '/table', component: Table, name: 'table' },
+        { path: '/pagination', component: Pagination, name: 'pagination' }
       ]
     }
   ]

@@ -26,7 +26,7 @@
   </div>
   <ms-subheader>4 可排序的表格</ms-subheader>
   <div class="ms-form-item">
-    <ms-table multiple :columns="tableHead4" :data="tableBody4"></ms-table>
+    <ms-table multiple :columns="tableHead4" :data="tableBody4" height="300px"></ms-table>
   </div>
 </div>
 </template>

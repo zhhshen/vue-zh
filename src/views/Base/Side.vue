@@ -27,6 +27,9 @@ export default {
       }, {
         title: '表格',
         name: 'table'
+      }, {
+        title: '分页',
+        name: 'pagination'
       }]
     }
   }
