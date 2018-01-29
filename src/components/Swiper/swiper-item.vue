@@ -34,4 +34,8 @@ export default {
 </script>
 
 <style lang="less">
+.zh-swiper-item {
+    float: left;
+    height: 100%;
+}
 </style>

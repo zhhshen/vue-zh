@@ -1,6 +1,6 @@
 <template lang="html">
 <div class="demo-swiper">
-    <swiper>
+    <swiper :autoplay="0">
         <swiper-item v-for="(m, index) in images" :key="index">
             <img :src="m">
         </swiper-item>
@@ -29,5 +29,12 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="less">
+.demo-swiper {
+    height: 400px;
+    .zh-swiper {
+        width: 600px;
+        height: 400px;
+    }
+}
 </style>

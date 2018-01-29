@@ -141,9 +141,9 @@ export default {
             const { active, count, swipes, deltaX, width } = this
             if (move) {
                 if (active === -1) {
-                    swipes[count - 1].offset =
+                    swipes[count - 1].offset = 0
                 }
-                swipers][0].offset = active === count - 1 && move > 0 ? count * width : 0
+                swipes[0].offset = active === count - 1 && move > 0 ? count * width : 0
                 this.active += move
             } else {
                 if (active === 0) {
@@ -169,7 +169,7 @@ export default {
                         this.move(1)
                         this.autoPlay()
                     }, 30)
-                }, autoPlay)
+                }, autoplay)
             }
         },
 
@@ -190,5 +190,36 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="less">
+.zh-swiper {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    user-select: none;
+    &__track {
+        height: 100%;
+        overflow: hidden;
+    }
+    &__indicators {
+        left: 50%;
+        bottom: 10px;
+        position: absolute;
+        height: 6px;
+        transform: translate3d(-50%, 0, 0);
+        & i {
+            border-radius: 100%;
+            vertical-align: top;
+            display: inline-block;
+            background-color: #999;
+            width: 6px;
+            height: 6px;
+        }
+        & i:not(:last-child) {
+            margin-right: 6px;
+        }
+    }
+    &__indicator--active {
+        background-color: #f60;
+    }
+}
 </style>
