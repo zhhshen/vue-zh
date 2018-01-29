@@ -1,28 +1,33 @@
 <template lang="html">
 <div class="ms-organization-wrap"
     v-if="organization.length"
-    :style="customStyle" >
+    :style="customStyle">
     <div class="ms-organization-title" @click="toggleChild">
         <span v-show="!selectedItems.length || multipleSwitch">{{ hint }}</span>
         <span v-show="(selectedItems.length >0 && !multipleSwitch)">{{selectedItems | filterContent}}</span>
         <i class="ion-chevron-down ms-organization-icon"></i>
     </div>
+
     <div class="ms-organization-body" v-show="visible" :style="customStyle">
-      <div  class="ms-organization-search">
-        <input type="text" v-model="searchVal" :placeholder="placeholder">
-      </div>
-      <div class="ms-organization-router" v-if="organizationNavs.length">
-        <span>已选择:</span>
-        <a v-for="(nav, inx) in organizationNavs" :key="nav.value" @click.prevent.stop="changeNav(nav, inx)">{{nav.label}}<span v-if="(organizationNavs.length - 1) !== inx">></span></a>
-      </div>
-      <div  class="ms-organization-content">
-        <ul class="ms-organization-options" v-if="filterSearch.length">
-          <li :class="{ active: item.value === cur }" :key="item.value" v-for="(item, inx) in filterSearch" @click.stop="showChild(item)"><div>{{item.label}}</div></li>
-        </ul>
-        <ul class="ms-organization-options" v-else>
-          <li><div>没有匹配项</div></li>
-        </ul>
-      </div>
+        <div  class="ms-organization-search">
+            <input type="text" v-model="searchVal" :placeholder="placeholder">
+        </div>
+
+        <div class="ms-organization-router" v-if="organizationNavs.length">
+            <span>已选择:</span>
+            <a v-for="(nav, inx) in organizationNavs"
+                :key="nav.value"
+                @click.prevent.stop="changeNav(nav, inx)">{{nav.label}}<span v-if="(organizationNavs.length - 1) !== inx">></span></a>
+        </div>
+
+        <div class="ms-organization-content">
+            <ul class="ms-organization-options" v-if="filterSearch.length">
+                <li :class="{ active: item.value === cur }" :key="item.value" v-for="(item, inx) in filterSearch" @click.stop="showChild(item)"><div>{{item.label}}</div></li>
+            </ul>
+            <ul class="ms-organization-options" v-else>
+                <li><div>没有匹配项</div></li>
+            </ul>
+        </div>
     </div>
   </div>
 </template>
@@ -30,6 +35,7 @@
 <script>
 export default {
     name: 'form-organization',
+
     props: {
         organization: {
             type: Array,
@@ -70,14 +76,14 @@ export default {
         }
     },
     watch: {
-        value(newVal) {
+        value (newVal) {
             this.inputValue = newVal
         },
-        inputValue(newVal) {
+        inputValue (newVal) {
             this.$emit('input', newVal)
         }
     },
-    created() {
+    created () {
         this.currOrganization = this.organization
         this.inputValue = this.value
     },
@@ -95,7 +101,7 @@ export default {
                 })
             }
         },
-        selectedItems() {
+        selectedItems () {
             this.cur = ''
             this.content = []
             let seletedValues = []
@@ -175,12 +181,12 @@ export default {
             )
         },
 
-        closeOnDocumentClick(e) {
+        closeOnDocumentClick (e) {
             if (!this.$el.contains(e.target)) {
                 this.hide()
             }
         },
-        showChild(item) {
+        showChild (item) {
             let organizationNavs = this.organizationNavs
             let currOrganization = this.currOrganization
             this.searchVal = ''
@@ -232,11 +238,13 @@ export default {
             this.inputValue = this.content.map(i => i.value)
         }
     },
+
     filters: {
-        filterContent: function(content) {
+        filterContent: function (content) {
             return content.length ? content.map(i => i.label).join('/') : ''
         }
     },
+
     beforeDestroy() {
         this.hide()
     }
